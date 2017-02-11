@@ -1,0 +1,6 @@
+/Makefile
+/deps
+/tests
+/tools
+/.gitmodules
+/.npmignore

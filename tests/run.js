@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2016 Joyent, Inc.
+ * Copyright 2017 Joyent, Inc.
  */
 
 'use strict';
@@ -911,22 +911,47 @@ test('UUID-S-KI-U', function (t) {
     });
 });
 
-test('UUIDarray-S-KV', function (t) {
+test('UUIDarray-S-KV: accepts and returns array of UUIDs', function (t) {
     var opts = {
         strict: true,
         required: {
             uuid: validate.UUIDarray
         }
     };
-    var params = { uuid: ['ee985c08-aadb-11e6-a317-bb60373c8455',
-        '1719a244-ab78-11e6-bd7e-c71f1a793a36'] };
+
+    var ids = [
+        'ee985c08-aadb-11e6-a317-bb60373c8455',
+        '1719a244-ab78-11e6-bd7e-c71f1a793a36'
+    ];
+    var sortedIDs = ids.slice().sort();
+    var params = { uuid: ids };
+
     validate.params(opts, null, params, function (err, res) {
         t.ifErr(err, 'Expecting success');
+        t.deepEqual(res, { uuid: sortedIDs }, 'Returns UUIDs');
         t.end();
     });
 });
 
-test('UUIDarray-S-KI', function (t) {
+test('UUIDarray-S-KV: accepts and converts UUID string', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            uuid: validate.UUIDarray
+        }
+    };
+
+    var id = 'ee985c08-aadb-11e6-a317-bb60373c8455';
+    var params = { uuid: id };
+
+    validate.params(opts, null, params, function (err, res) {
+        t.ifErr(err, 'Expecting success');
+        t.deepEqual(res, { uuid: [ id ] }, 'String converted to array');
+        t.end();
+    });
+});
+
+test('UUIDarray-S-KI: array containing an invalid UUID', function (t) {
     var opts = {
         strict: true,
         required: {
@@ -943,6 +968,46 @@ test('UUIDarray-S-KI', function (t) {
         set_err_inv(error1, [ 'Gotta keep my mind free...'], true);
         var errors = [ error1 ];
         expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('UUIDarray-S-KI: not an array (object)', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            uuid: validate.UUIDarray
+        }
+    };
+
+    var params = { uuid: { } };
+
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var error1 = util_err.invalidParam('uuid',
+            util_const.msg.ARRAY_OF_STR);
+        expErr(msg, [ error1 ], err, t);
+        t.end();
+    });
+});
+
+test('UUIDarray-S-KI: not an array (boolean)', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            uuid: validate.UUIDarray
+        }
+    };
+
+    var params = { uuid: true };
+
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var error1 = util_err.invalidParam('uuid',
+            util_const.msg.ARRAY_OF_STR);
+        expErr(msg, [ error1 ], err, t);
         t.end();
     });
 });
