@@ -321,7 +321,6 @@ test('IP-S-U', function (t) {
     validate.params(opts, null, params, function (err, res) {
         t.ok(err, 'Expecting error');
         var msg = util_const.msg.INVALID_PARAMS;
-        /* TODO Unknown params instead of invalid param */
         var errors = [ util_err.unknownParams(['hal']),
             util_err.missingParam('ip') ];
         expErr(msg, errors, err, t);
@@ -1230,6 +1229,59 @@ test('offset-S-KI-U', function (t) {
         var error1 = util_err.invalidParam('offset', util_const.msg.OFFSET);
         var error2 = util_err.unknownParams([ 'hi' ]);
         var errors = [ error1, error2 ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('boolean-S-KV', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            bool: validate.boolean
+        }
+    };
+    var params = { bool: 'true' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ifErr(err, 'Expecting success');
+        t.end();
+    });
+});
+
+test('boolean-S-KI', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            bool: validate.boolean
+        }
+    };
+
+    var params = { bool: 'total-nonsense' };
+
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [
+            util_err.invalidParam('bool', 'must be a boolean value')
+        ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('boolean-S-U', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            bool: validate.boolean
+        }
+    };
+    var params = { qwerty: 'total-nonsense' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.unknownParams(['qwerty']),
+                       util_err.missingParam('bool') ];
         expErr(msg, errors, err, t);
         t.end();
     });
