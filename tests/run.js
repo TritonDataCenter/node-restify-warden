@@ -910,6 +910,74 @@ test('UUID-S-KI-U', function (t) {
     });
 });
 
+test('uuidPrefix-S-KV', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            uuid: validate.uuidPrefix
+        }
+    };
+    var params = { uuid: '895ef360*' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ifErr(err, 'Expecting success');
+        t.end();
+    });
+});
+
+test('uuidPrefix-S-KI-infix', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            uuid: validate.uuidPrefix
+        }
+    };
+    var params = { uuid: '*895ef360*' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('uuid',
+            util_const.msg.UUID_WILDCARD) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('uuidPrefix-S-KI-prefix-bad-char', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            uuid: validate.uuidPrefix
+        }
+    };
+    var params = { uuid: '895ef360zzz*' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('uuid',
+            util_const.msg.UUID_PREF_CHAR) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('uuidPrefix-S-KI-suffix', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            uuid: validate.uuidPrefix
+        }
+    };
+    var params = { uuid: '*895ef360' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('uuid',
+            util_const.msg.UUID_PREF) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
 test('UUIDarray-S-KV: accepts and returns array of UUIDs', function (t) {
     var opts = {
         strict: true,
