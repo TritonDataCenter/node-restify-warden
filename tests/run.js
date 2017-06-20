@@ -1312,6 +1312,252 @@ test('isUUID', function (t) {
     t.end();
 });
 
+test('String-S-KV', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            str: validate.string
+        }
+    };
+    var params = { str: 'MyString' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ifErr(err, 'Expecting success');
+        t.deepEqual(params, res);
+        t.end();
+    });
+});
+
+test('String-S-KI-empty', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            str: validate.string
+        }
+    };
+    var params = { str: '' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('str',
+            util_const.msg.STR_EMPTY) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('String-S-KI-type', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            str: validate.string
+        }
+    };
+    var params = { str: 42 };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('str',
+            util_const.msg.STR) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('String-S-U', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            str: validate.string
+        }
+    };
+    var params = { junk: 'MyString' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.unknownParams([ 'junk' ]),
+            util_err.missingParam('str') ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('String-S-KI-U', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            str: validate.string
+        }
+    };
+    var params = { junk: 'SomeJunk', str: '' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('str',
+            util_const.msg.STR_EMPTY),
+            util_err.unknownParams([ 'junk' ]) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('StringArray-S-KV', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            strs: validate.stringArray
+        }
+    };
+    var params = { strs: ['String', 'String', 'String'] };
+    validate.params(opts, null, params, function (err, res) {
+        t.ifErr(err, 'Expecting success');
+        t.deepEqual(params, res);
+        t.end();
+    });
+});
+
+test('StringArray-S-KI-one-empty', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            strs: validate.stringArray
+        }
+    };
+    var params = { strs: ['String', 'String', ''] };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('strs',
+            util_const.msg.STR_EMPTY) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('StringArray-S-KI-not-array', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            strs: validate.stringArray
+        }
+    };
+    var params = { strs: 'String,With,Commas' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('strs',
+            util_const.msg.ARRAY_OF_STR) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('StringArray-S-U', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            strs: validate.stringArray
+        }
+    };
+    var params = { trash: ['MyString'] };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.unknownParams([ 'trash' ]),
+                       util_err.missingParam('strs') ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('StringArray-S-KI-U', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            strs: validate.stringArray
+        }
+    };
+    var params = { trash: ['MyString'], strs: [''] };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('strs',
+            util_const.msg.STR_EMPTY),
+            util_err.unknownParams([ 'trash' ]) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('StringOrArray-S-KV', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            strs: validate.stringOrArray
+        }
+    };
+    var params = { strs: ['MyString'] };
+    validate.params(opts, null, params, function (err, res) {
+        t.ifErr(err, 'Expecting success');
+        t.deepEqual(params, res);
+        t.end();
+    });
+});
+
+test('StringOrArray-S-KI', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            strs: validate.stringOrArray
+        }
+    };
+    var params = { strs: [''] };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('strs',
+            util_const.msg.STR_EMPTY) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('StringOrArray-S-U', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            strs: validate.stringOrArray
+        }
+    };
+    var params = { trash: ['SomeThing'] };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.unknownParams([ 'trash' ]),
+                       util_err.missingParam('strs') ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('StringOrArray-S-KI-U', function (t) {
+    var opts = {
+        strict: true,
+        required: {
+            strs: validate.stringOrArray
+        }
+    };
+    var params = { trash: ['SomeThing'], strs: '' };
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var errors = [ util_err.invalidParam('strs',
+            util_const.msg.ARRAY_OF_STR),
+            util_err.unknownParams([ 'trash' ]) ];
+        expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
 test('isNotInteger', function (t) {
     var val = '';
     var id = 'str';
