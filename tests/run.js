@@ -44,7 +44,7 @@ function expErrInternal(err, t) {
 
 function expVErrInternal(err, errs,  t) {
     var errExp = new restify.InternalError('Internal error');
-    errExp.we_cause = new verror.MultiError(errs);
+    errExp.jse_cause = new verror.MultiError(errs);
 
     t.deepEqual(err, errExp);
 }
@@ -95,6 +95,35 @@ test('GEN-S-MULTI', function (t) {
         t.ifErr(err, 'Expecting success');
         var expRes = {foo: 'foo', bar: 'bar'};
         t.deepEqual(res, expRes, 'Expect res and expRes to be eq');
+        t.end();
+    });
+});
+
+test('Enum-S-KV', function (t) {
+    var opts = {
+        strict: true,
+        required: {e: validate.enum(['foo', 'bar', 'baz'])}
+    };
+    var params = {e: 'bar'};
+    validate.params(opts, null, params, function (err, res) {
+        t.ifErr(err, 'Expecting success');
+        t.end();
+    });
+});
+
+test('Enum-S-KI', function (t) {
+    var values = ['foo', 'bar', 'baz'];
+    var opts = {
+        strict: true,
+        required: {e: validate.enum(values)}
+    };
+    var params = {e: 'oof'};
+    validate.params(opts, null, params, function (err, res) {
+        t.ok(err, 'Expecting error');
+        var msg = util_const.msg.INVALID_PARAMS;
+        var submsg = 'must be one of: ' + values.map(JSON.stringify).join(', ');
+        var errors = [ util_err.invalidParam('e', submsg) ];
+        expErr(msg, errors, err, t);
         t.end();
     });
 });

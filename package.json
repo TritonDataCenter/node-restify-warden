@@ -1,6 +1,6 @@
 {
   "name": "restify-warden",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Yet another parameter validator",
   "author": "Joyent, Inc",
   "main": "./lib/validate.js",
@@ -26,7 +26,7 @@
   "scripts": {
   },
   "dependencies": {
-    "assert-plus": "0.1",
+    "assert-plus": "1.0.0",
     "vasync": "1.6.4",
     "verror": "1.3",
     "ip6addr": "0.2.2"
