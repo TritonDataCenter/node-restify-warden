@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright 2017 Joyent, Inc.
+ * Copyright (c) 2018 Joyent, Inc.
  */
 
 'use strict';
@@ -1651,6 +1651,27 @@ test('StringOrArray-S-KI-U', function (t) {
             util_const.msg.ARRAY_OF_STR),
             util_err.unknownParams([ 'trash' ]) ];
         expErr(msg, errors, err, t);
+        t.end();
+    });
+});
+
+test('"after" stops at first error', function (t) {
+    var err1 = util_err.invalidParam('first', 'should be the only error');
+    var err2 = util_err.invalidParam('second', 'should not be included');
+    var opts = {
+        after: [
+            function afterFirst(_opts, _params, _parsed, cb) {
+                cb(err1);
+            },
+            function afterSecond(_opts, _params, _parsed, cb) {
+                cb(err2);
+            }
+        ]
+    };
+
+    validate.params(opts, null, {}, function (err, res) {
+        t.ok(err, 'Expecting error');
+        expErr(util_const.msg.INVALID_PARAMS, [ err1 ], err, t);
         t.end();
     });
 });
