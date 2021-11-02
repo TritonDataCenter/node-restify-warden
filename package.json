@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/joyent/node-restify-warden.git"
+    "url": "https://github.com/joyent/node-restify-warden.git"
   },
   "engines": ["node >=0.10.0"],
   "keywords": ["validate", "params"],
